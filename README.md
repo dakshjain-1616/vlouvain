@@ -5,6 +5,39 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-30%20passed-brightgreen.svg)]()
 
+## Quickstart
+
+```python
+from vlouvain import VLouvain
+import numpy as np
+
+# Generate sample data
+X = np.random.randn(1000, 128).astype("float32")
+
+# Cluster with default parameters
+model = VLouvain(k=15)
+labels = model.fit_predict(X)
+
+print(f"Found {model.n_clusters_} clusters")
+print(f"Cluster labels: {labels[:10]}")  # Show first 10 labels
+```
+
+## Example Output
+
+```
+Found 12 clusters
+Cluster labels: [ 3  7  2 11  5  9  1  4  8  6]
+```
+
+```mermaid
+graph TD
+    A[Input Vectors] --> B[Normalize L2]
+    B --> C[Build k-NN Graph]
+    C --> D[Label Propagation]
+    D --> E[Optional Louvain Refinement]
+    E --> F[Cluster Labels]
+```
+
 **VLouvain clusters millions of float32 embeddings in seconds using a FAISS-accelerated k-NN graph and vectorised label propagation — no GPU, no C++ compilation, no O(n²) bottleneck.**
 
 ---
@@ -50,26 +83,6 @@ tqdm>=4.65
 ```
 
 > If you already have `faiss-gpu` installed, `faiss-cpu` is not required — VLouvain will use whichever `faiss` module is importable. Computation stays on CPU regardless.
-
----
-
-## Quickstart
-
-```python
-from vlouvain import VLouvain
-import numpy as np
-
-# 10 000 random 128-dimensional embeddings
-X = np.random.randn(10_000, 128).astype("float32")
-
-labels = VLouvain(k=15, verbose=True).fit_predict(X)
-# [VLouvain] kNN build: 33ms  label_propagation: 12ms
-
-print(f"Found {labels.max() + 1} clusters")
-print(f"Label array shape: {labels.shape}")   # (10000,)
-```
-
-`labels` is a `numpy.ndarray` of `int64` with one entry per input row. Labels are contiguous integers starting from 0.
 
 ---
 
